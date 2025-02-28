@@ -17,7 +17,7 @@ import numpy as np
 # Initialize models
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 semantic_model = SentenceTransformer('all-MiniLM-L6-v2')
-chat = ChatGroq(temperature=0.7, model_name="llama3-70b-8192", groq_api_key="7")
+chat = ChatGroq(temperature=0.7, model_name="llama3-70b-8192", groq_api_key="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")
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
 # Initialize ChromaDB
@@ -102,7 +102,7 @@ import streamlit as st
 import openai
 
 # ✅ Set up Groq API key (Replace with actual key)
-GROQ_API_KEY = "your_groq_api_key"
+GROQ_API_KEY = "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"
 openai.api_key = GROQ_API_KEY
 
 # ✅ Custom function to call Groq Llama 3 API
