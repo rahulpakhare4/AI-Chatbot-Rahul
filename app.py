@@ -14,6 +14,13 @@ from sentence_transformers import SentenceTransformer, util
 from PyPDF2 import PdfReader
 import numpy as np
 
+import streamlit as st
+import openai
+
+# ✅ Set page config
+st.set_page_config(page_title="Rahul's AI Clone Chatbot", layout="wide")
+
+
 # Initialize models
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 semantic_model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -98,8 +105,7 @@ else:
 #Sidebar Code hide ends here
 
 #CHAT UI
-import streamlit as st
-import openai
+
 
 # ✅ Set up Groq API key (Replace with actual key)
 GROQ_API_KEY = "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"
@@ -123,8 +129,7 @@ def query_llama3(user_input):
     except Exception as e:
         return f"❌ Error: {str(e)}"
 
-# ✅ Set page config
-st.set_page_config(page_title="Rahul's AI Clone Chatbot", layout="wide")
+
 
 # ✅ Title
 st.markdown("<h2 style='text-align: center;'>🤖 Rahul's AI Clone Chatbot</h2>", unsafe_allow_html=True)
