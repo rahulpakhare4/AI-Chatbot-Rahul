@@ -17,7 +17,7 @@ import numpy as np
 # Initialize models
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 semantic_model = SentenceTransformer('all-MiniLM-L6-v2')
-chat = ChatGroq(temperature=0.7, model_name="llama3-70b-8192", groq_api_key="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")
+chat = ChatGroq(temperature=0.7, model_name="llama3-70b-8192", groq_api_key="7")
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
 # Initialize ChromaDB
@@ -99,11 +99,25 @@ else:
 
 #CHAT UI
 import streamlit as st
+import openai
 
-# ✅ Replace this function with your actual AI response function
+# ✅ Set up your Groq API key
+GROQ_API_KEY = "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"  # 🔴 Replace with your actual API key
+
+openai.api_key = GROQ_API_KEY  # Set API key for authentication
+
 def query_llama3(user_input):
-    # Call your Llama 3 AI model here and return the response
-    return "I am an AI clone of Rahul. How can I assist you?"  # Placeholder AI response
+    """Fetch response from Groq Llama 3 API"""
+    try:
+        response = openai.ChatCompletion.create(
+            model="llama-3-8b",
+            messages=[{"role": "user", "content": user_input}],
+            max_tokens=100,
+            temperature=0.7
+        )
+        return response["choices"][0]["message"]["content"]
+    except Exception as e:
+        return "❌ Error: Unable to fetch AI response."
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -136,7 +150,7 @@ if st.button("Send"):
         # Add user message
         st.session_state.messages.append({"role": "user", "text": user_query})
 
-        # ✅ Call AI model for response
+        # ✅ Call AI model for real response
         ai_response = query_llama3(user_query)
 
         # Add AI response
@@ -144,3 +158,4 @@ if st.button("Send"):
 
         # Refresh UI to show the latest messages
         st.rerun()
+
