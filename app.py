@@ -100,16 +100,16 @@ else:
 #CHAT UI
 import streamlit as st
 
-# Assuming you have a function to fetch AI response
+# ✅ Replace this function with your actual AI response function
 def query_llama3(user_input):
-    # Replace this with your actual AI model call
-    return f"🤖 {user_input[::-1]}"  # Example: AI responds with reversed text (Replace this!)
+    # Call your Llama 3 AI model here and return the response
+    return "I am an AI clone of Rahul. How can I assist you?"  # Placeholder AI response
 
-# Initialize chat history in session state
+# Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-st.title("Rahul's AI Clone Chatbot")
+st.title("Rahul's AI Clone Chatbot 🤖")
 
 # Display chat history
 for msg in st.session_state.messages:
@@ -117,30 +117,30 @@ for msg in st.session_state.messages:
         st.markdown(
             f"<div style='text-align: right; background-color: #DCF8C6; padding: 10px; "
             f"border-radius: 10px; margin: 5px; display: inline-block; max-width: 70%;'>"
-            f"{msg['text']}</div>",
+            f"👤 {msg['text']}</div>",
             unsafe_allow_html=True,
         )
     else:
         st.markdown(
             f"<div style='text-align: left; background-color: #EAEAEA; padding: 10px; "
             f"border-radius: 10px; margin: 5px; display: inline-block; max-width: 70%;'>"
-            f"{msg['text']}</div>",
+            f"🤖 {msg['text']}</div>",
             unsafe_allow_html=True,
         )
 
-# User input
+# User input field
 user_query = st.text_input("Type a message...")
 
 if st.button("Send"):
     if user_query:
-        # Append user message
+        # Add user message
         st.session_state.messages.append({"role": "user", "text": user_query})
 
-        # Get AI response
-        response = query_llama3(user_query)  # Call your AI function here
-        
-        # Append AI response
-        st.session_state.messages.append({"role": "ai", "text": response})
+        # ✅ Call AI model for response
+        ai_response = query_llama3(user_query)
 
-        # Refresh to update chat
+        # Add AI response
+        st.session_state.messages.append({"role": "ai", "text": ai_response})
+
+        # Refresh UI to show the latest messages
         st.rerun()
