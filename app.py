@@ -111,9 +111,9 @@ else:
 GROQ_API_KEY = "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"
 openai.api_key = GROQ_API_KEY
 
-# ✅ Custom function to call Groq Llama 3 API
+# ✅ Updated AI Query Function
 def query_llama3(user_input):
-    """Fetch response from Groq Llama 3 API with error handling"""
+    """Fetch response from Groq Llama 3 API with better error handling"""
     try:
         response = openai.ChatCompletion.create(
             model="llama-3-8b",
@@ -122,44 +122,26 @@ def query_llama3(user_input):
             temperature=0.7
         )
         return response["choices"][0]["message"]["content"]
-    except openai.error.AuthenticationError:
-        return "❌ Error: Invalid API key. Please check your Groq API key."
-    except openai.error.APIConnectionError:
-        return "❌ Error: Cannot connect to Groq servers. Check internet or API availability."
+    
     except Exception as e:
         return f"❌ Error: {str(e)}"
 
-
-
-# ✅ Title
-st.markdown("<h2 style='text-align: center;'>🤖 Rahul's AI Clone Chatbot</h2>", unsafe_allow_html=True)
-
-# ✅ Session state for chat history
+# ✅ UI for Chatbot
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
-# ✅ Chat display area (styled like WhatsApp)
-chat_container = st.container()
-with chat_container:
-    for message in st.session_state["messages"]:
-        role, content = message["role"], message["content"]
-        if role == "user":
-            st.markdown(f"""
-            <div style='text-align: right; background-color: #DCF8C6; padding: 10px; margin: 5px; border-radius: 10px; width: 60%; float: right;'>
-                <b>👤 You:</b> {content}
-            </div><div style='clear: both;'></div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown(f"""
-            <div style='text-align: left; background-color: #E0E0E0; padding: 10px; margin: 5px; border-radius: 10px; width: 60%;'>
-                <b>🤖 AI:</b> {content}
-            </div><div style='clear: both;'></div>
-            """, unsafe_allow_html=True)
+# ✅ Chat Display
+for message in st.session_state["messages"]:
+    role, content = message["role"], message["content"]
+    if role == "user":
+        st.markdown(f"<div style='text-align: right; background-color: #DCF8C6; padding: 10px; margin: 5px; border-radius: 10px; width: 60%; float: right;'><b>👤 You:</b> {content}</div><div style='clear: both;'></div>", unsafe_allow_html=True)
+    else:
+        st.markdown(f"<div style='text-align: left; background-color: #E0E0E0; padding: 10px; margin: 5px; border-radius: 10px; width: 60%;'><b>🤖 AI:</b> {content}</div><div style='clear: both;'></div>", unsafe_allow_html=True)
 
-# ✅ User input box (fixed at the bottom)
+# ✅ Input Box
 user_query = st.text_input("Type a message...", key="input", placeholder="Ask me anything...")
 
-# ✅ Submit button
+# ✅ Send Button
 if st.button("Send"):
     if user_query:
         # Store user message
@@ -171,5 +153,5 @@ if st.button("Send"):
         # Store AI message
         st.session_state["messages"].append({"role": "assistant", "content": ai_response})
         
-        # Refresh page to show new messages
+        # Refresh to show messages
         st.experimental_rerun()
