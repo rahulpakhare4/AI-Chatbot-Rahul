@@ -97,8 +97,35 @@ else:
         st.sidebar.success("You are ready to use this chatbot now!")
 #Sidebar Code hide ends here
 
-user_query = st.text_input("Ask a question:")
-if st.button("Get Answer"):
+import streamlit as st
+
+# Initialize chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+st.title("Rahul's AI Clone Chatbot")
+
+# Display chat history
+for msg in st.session_state.messages:
+    if msg["role"] == "user":
+        st.markdown(f"<div style='text-align: right; background-color: #DCF8C6; padding: 10px; border-radius: 10px; margin: 5px; display: inline-block;'>{msg['text']}</div>", unsafe_allow_html=True)
+    else:
+        st.markdown(f"<div style='text-align: left; background-color: #EAEAEA; padding: 10px; border-radius: 10px; margin: 5px; display: inline-block;'>{msg['text']}</div>", unsafe_allow_html=True)
+
+# User input
+user_query = st.text_input("Type a message...")
+
+if st.button("Send"):
     if user_query:
-        response = query_llama3(user_query)
-        st.write("🤖", response)
+        # Add user message to chat history
+        st.session_state.messages.append({"role": "user", "text": user_query})
+
+        # Generate AI response
+        response = "🤖 " + "This is an AI response."  # Replace with query_llama3(user_query)
+        
+        # Add AI message to chat history
+        st.session_state.messages.append({"role": "ai", "text": response})
+
+        # Refresh page to show updated chat history
+        st.rerun()
+
