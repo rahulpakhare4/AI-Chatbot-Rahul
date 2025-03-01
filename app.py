@@ -89,6 +89,21 @@ st.markdown(
     .chat-container { max-height: 400px; overflow-y: auto; }
     .user-message { text-align: right; background-color: #DCF8C6; padding: 10px; border-radius: 10px; margin: 5px 0; }
     .bot-message { text-align: left; background-color: #E8E8E8; padding: 10px; border-radius: 10px; margin: 5px 0; }
+
+     .title-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: white;
+        padding: 10px 0;
+        z-index: 1000;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+    .main-content {
+        margin-top: 80px;  /* Pushes content below the sticky title */
+    }
     </style>
     """,
     unsafe_allow_html=True,
