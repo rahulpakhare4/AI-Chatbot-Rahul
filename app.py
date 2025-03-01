@@ -61,6 +61,9 @@ def query_llama3(user_query):
 
 #UI starts from here
 
+import streamlit as st
+from PyPDF2 import PdfReader
+
 # Initialize session state for chat history
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
@@ -82,40 +85,35 @@ if uploaded_file is not None:
     pdf_text = load_pdf(uploaded_file)
     st.sidebar.success("PDF uploaded successfully! Text extracted.")
 
-# Apply custom CSS to style user and bot messages
+# Apply custom CSS for styling
 st.markdown(
     """
     <style>
     .chat-container { max-height: 400px; overflow-y: auto; }
     .user-message { text-align: right; background-color: #DCF8C6; padding: 10px; border-radius: 10px; margin: 5px 0; }
     .bot-message { text-align: left; background-color: #E8E8E8; padding: 10px; border-radius: 10px; margin: 5px 0; }
+    .send-button { width: 50px; height: 40px; border-radius: 50%; font-size: 20px; background-color: #007BFF; color: white; border: none; cursor: pointer; }
+    .send-button:hover { background-color: #0056b3; }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
 # Display Chat History
-#st.subheader("Chat History")
 chat_container = st.container()
 with chat_container:
     for chat_message in st.session_state.chat_history:
         role = chat_message["role"]
         if role == "user":
-            st.markdown(
-                f'<div class="user-message">👤 {chat_message["content"]}</div>',
-                unsafe_allow_html=True,
-            )
+            st.markdown(f'<div class="user-message">👤 {chat_message["content"]}</div>', unsafe_allow_html=True)
         else:
-            st.markdown(
-                f'<div class="bot-message">🤖 {chat_message["content"]}</div>',
-                unsafe_allow_html=True,
-            )
+            st.markdown(f'<div class="bot-message">🤖 {chat_message["content"]}</div>', unsafe_allow_html=True)
 
 # Function to process user input
 def process_input():
     user_query = st.session_state.user_input.strip()
     if user_query:
-        response = query_llama3(user_query)  # Call your chatbot function
+        response = f"🤖: This is a response to '{user_query}'"  # Replace with actual chatbot function
 
         # Save chat history in session state
         st.session_state.chat_history.append({"role": "user", "content": user_query})
@@ -126,4 +124,12 @@ def process_input():
 
 # Move Input Box and Button Below Chat
 st.markdown("---")  # Adds a separator
-st.text_input("Ask a question:", key="user_input", on_change=process_input)
+
+col1, col2 = st.columns([8, 1])  # Adjust column width
+
+with col1:
+    st.text_input("Ask a question:", key="user_input", on_change=process_input)
+
+with col2:
+    if st.button("🔄", help="Submit", key="submit_button"):
+        process_input()  # Call process function when button is clicked
