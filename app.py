@@ -85,15 +85,13 @@ if uploaded_file is not None:
     pdf_text = load_pdf(uploaded_file)
     st.sidebar.success("PDF uploaded successfully! Text extracted.")
 
-# Apply custom CSS for styling
+# Apply custom CSS to style user and bot messages
 st.markdown(
     """
     <style>
     .chat-container { max-height: 400px; overflow-y: auto; }
     .user-message { text-align: right; background-color: #DCF8C6; padding: 10px; border-radius: 10px; margin: 5px 0; }
     .bot-message { text-align: left; background-color: #E8E8E8; padding: 10px; border-radius: 10px; margin: 5px 0; }
-    .send-button { width: 50px; height: 40px; border-radius: 50%; font-size: 20px; background-color: #007BFF; color: white; border: none; cursor: pointer; }
-    .send-button:hover { background-color: #0056b3; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -105,9 +103,15 @@ with chat_container:
     for chat_message in st.session_state.chat_history:
         role = chat_message["role"]
         if role == "user":
-            st.markdown(f'<div class="user-message">👤 {chat_message["content"]}</div>', unsafe_allow_html=True)
+            st.markdown(
+                f'<div class="user-message">👤 {chat_message["content"]}</div>',
+                unsafe_allow_html=True,
+            )
         else:
-            st.markdown(f'<div class="bot-message">🤖 {chat_message["content"]}</div>', unsafe_allow_html=True)
+            st.markdown(
+                f'<div class="bot-message">🤖 {chat_message["content"]}</div>',
+                unsafe_allow_html=True,
+            )
 
 # Function to process user input
 def process_input():
@@ -124,12 +128,4 @@ def process_input():
 
 # Move Input Box and Button Below Chat
 st.markdown("---")  # Adds a separator
-
-col1, col2 = st.columns([8, 1])  # Adjust column width
-
-with col1:
-    st.text_input("Ask a question:", key="user_input", on_change=process_input)
-
-with col2:
-    if st.button("🔄", help="Submit", key="submit_button"):
-        process_input()  # Call process function when button is clicked
+st.text_input("Ask a question:", key="user_input", on_change=process_input)
