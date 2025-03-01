@@ -96,13 +96,15 @@ st.markdown(
         left: 0;
         width: 100%;
         background-color: white;
-        padding: 10px 0;
+        padding: 15px 0;
         z-index: 1000;
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         text-align: center;
+        font-size: 24px;
+        font-weight: bold;
     }
     .main-content {
-        margin-top: 80px;  /* Pushes content below the sticky title */
+        margin-top: 70px;  /* Pushes content below sticky title */
     }
     </style>
     """,
