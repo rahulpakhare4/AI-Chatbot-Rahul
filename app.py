@@ -68,7 +68,9 @@ if "user_input" not in st.session_state:
 
 # Streamlit UI
 st.title("Rahul's AI Chatbot")
-#Sidebar Hide code for public
+
+#Hide sidebar for public access starts from here
+
 # Define user authentication
 user_authenticated = False  # Change this based on authentication logic
 
@@ -94,7 +96,8 @@ else:
             embeddings=embeddings
         )
         st.sidebar.success("You are ready to use this chatbot now!")
-#Sidebar Code hide ends here
+#Hide sidebar for public access starts ends here
+
 # Apply custom CSS to style user and bot messages
 st.markdown(
     """
