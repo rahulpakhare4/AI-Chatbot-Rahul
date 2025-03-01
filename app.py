@@ -62,42 +62,28 @@ def query_llama3(user_query):
 # Streamlit UI
 st.title("Rahul's AI Chatbot")
 
-# Sidebar for file upload
-st.sidebar.header("Upload PDF")
-uploaded_file = st.sidebar.file_uploader("Upload a PDF", type=["pdf"])
-
-if uploaded_file is not None:
-    pdf_text = load_pdf(uploaded_file)
-    chunks = chunk_text(pdf_text)
-    embeddings = [embedding_model.embed_query(chunk) for chunk in chunks]
-    collection.add(
-        ids=[str(i) for i in range(len(chunks))],
-        documents=chunks,
-        embeddings=embeddings
-    )
-    st.sidebar.success("You are ready to use this chatbot now!")
-
-# Chat Interface
+# Display Chat History
 st.subheader("Chat History")
 chat_history = memory.load_memory_variables({}).get("chat_history", [])
 
+# Ensure no duplicate messages are displayed
+unique_messages = set()
 for chat_message in chat_history:
-    role = "👤" if isinstance(chat_message, HumanMessage) else "🤖"
-    st.write(f"{role}: {chat_message.content}")
+    if chat_message.content not in unique_messages:
+        role = "👤" if isinstance(chat_message, HumanMessage) else "🤖"
+        st.write(f"{role}: {chat_message.content}")
+        unique_messages.add(chat_message.content)
 
 # User Input
 user_query = st.text_input("Ask a question:")
+
 if st.button("Get Answer"):
     if user_query:
         response = query_llama3(user_query)
-        st.write("🤖", response)
-        
+
         # Save user input and response
         memory.save_context({"input": user_query}, {"output": response})
 
-        # Display updated chat history
-        chat_history = memory.load_memory_variables({}).get("chat_history", [])
-        for chat_message in chat_history:
-            role = "👤" if isinstance(chat_message, HumanMessage) else "🤖"
-            st.write(f"{role}: {chat_message.content}")
+        # Refresh the chat history
+        st.experimental_rerun()
 
