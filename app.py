@@ -68,7 +68,7 @@ if "user_input" not in st.session_state:
 
 # Streamlit UI
 st.title("Rahul's AI Chatbot")
-
+"""
 # Sidebar for PDF Upload
 st.sidebar.header("Upload PDF")
 uploaded_file = st.sidebar.file_uploader("Upload a PDF", type=["pdf"])
@@ -80,7 +80,7 @@ if uploaded_file is not None:
 
     pdf_text = load_pdf(uploaded_file)
     st.sidebar.success("PDF uploaded successfully! Text extracted.")
-
+"""
 # Apply custom CSS to style user and bot messages
 st.markdown(
     """
