@@ -95,7 +95,7 @@ st.markdown(
 )
 
 # Display Chat History
-st.subheader("Chat History")
+#st.subheader("Chat History")
 chat_container = st.container()
 with chat_container:
     for chat_message in st.session_state.chat_history:
