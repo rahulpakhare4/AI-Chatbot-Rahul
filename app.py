@@ -17,7 +17,7 @@ import numpy as np
 # Initialize models
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 semantic_model = SentenceTransformer('all-MiniLM-L6-v2')
-chat = ChatGroq(temperature=0.7, model_name="llama3-70b-8192", groq_api_key="your_groq_api_key")
+chat = ChatGroq(temperature=0.7, model_name="llama3-70b-8192", groq_api_key="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")
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
 # Initialize ChromaDB
