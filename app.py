@@ -62,21 +62,29 @@ def query_llama3(user_query):
 # Streamlit UI
 st.title("Rahul's AI Chatbot")
 
+# Sidebar for PDF Upload
+st.sidebar.header("Upload PDF")
+uploaded_file = st.sidebar.file_uploader("Upload a PDF", type=["pdf"])
+
+if uploaded_file is not None:
+    def load_pdf(file):
+        reader = PdfReader(file)
+        return "".join([page.extract_text() or "" for page in reader.pages])
+
+    pdf_text = load_pdf(uploaded_file)
+    st.sidebar.success("PDF uploaded successfully! Text extracted.")
+
 # Display Chat History
 st.subheader("Chat History")
+
+# Load conversation history from memory
 chat_history = memory.load_memory_variables({}).get("chat_history", [])
 
-# Create a container to store messages dynamically
-chat_container = st.container()
-
-# Ensure messages are displayed only once per session
-displayed_messages = set()
-with chat_container:
+# Display all past messages uniquely
+if chat_history:
     for chat_message in chat_history:
-        if chat_message.content not in displayed_messages:
-            role = "👤" if isinstance(chat_message, HumanMessage) else "🤖"
-            st.write(f"{role}: {chat_message.content}")
-            displayed_messages.add(chat_message.content)
+        role = "👤" if isinstance(chat_message, HumanMessage) else "🤖"
+        st.write(f"{role}: {chat_message.content}")
 
 # User Input
 user_query = st.text_input("Ask a question:")
@@ -88,13 +96,6 @@ if st.button("Get Answer"):
         # Save user input and response in memory
         memory.save_context({"input": user_query}, {"output": response})
 
-        # Manually refresh the chat container by reloading chat history
-        chat_history = memory.load_memory_variables({}).get("chat_history", [])
-        
-        # Display the latest response dynamically
-        with chat_container:
-            st.write(f"👤: {user_query}")
-            st.write(f"🤖: {response}")
-
-        
-
+        # Display new messages instantly
+        st.write(f"👤: {user_query}")
+        st.write(f"🤖: {response}")
