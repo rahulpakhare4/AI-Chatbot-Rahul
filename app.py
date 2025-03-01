@@ -82,13 +82,27 @@ if uploaded_file is not None:
     pdf_text = load_pdf(uploaded_file)
     st.sidebar.success("PDF uploaded successfully! Text extracted.")
 
+# Apply custom CSS to align user messages to the right
+st.markdown(
+    """
+    <style>
+    .user-message { text-align: right; background-color: #DCF8C6; padding: 10px; border-radius: 10px; margin: 5px 0; }
+    .bot-message { text-align: left; background-color: #E8E8E8; padding: 10px; border-radius: 10px; margin: 5px 0; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 # Display Chat History (Scrollable)
 st.subheader("Chat History")
 chat_container = st.container()
 with chat_container:
     for chat_message in st.session_state.chat_history:
-        role = "👤" if chat_message["role"] == "user" else "🤖"
-        st.write(f"{role}: {chat_message['content']}")
+        role = chat_message["role"]
+        if role == "user":
+            st.markdown(f'<div class="user-message">{chat_message["content"]}</div>', unsafe_allow_html=True)
+        else:
+            st.markdown(f'<div class="bot-message">{chat_message["content"]}</div>', unsafe_allow_html=True)
 
 # Move Input Box and Button Below Chat
 st.markdown("---")  # Adds a separator
