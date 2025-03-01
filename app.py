@@ -142,5 +142,10 @@ def process_input():
 
 # Move Input Box and Button Below Chat
 st.markdown("---")  # Adds a separator
-#st.text_input("Ask a question:", key="user_input", on_change=process_input)
-st.text_input("Ask a question...", key="user_input", on_change=process_input)
+
+# Input box for user query
+st.text_input("Ask a question:", key="user_input")
+
+# Submit button to trigger response
+if st.button("Submit Question"):
+    process_input()
