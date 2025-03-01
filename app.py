@@ -59,7 +59,6 @@ def query_llama3(user_query):
     memory.save_context({"input": user_query}, {"output": response.content})
     return response.content
 
-#UI starts from here
 # Initialize session state for chat history
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
@@ -69,13 +68,9 @@ if "user_input" not in st.session_state:
 # Streamlit UI
 st.title("Rahul's AI Chatbot")
 
-#Hide sidebar for public access starts from here
-
-# Define user authentication
+# Hide sidebar for public access
 user_authenticated = False  # Change this based on authentication logic
-
 if not user_authenticated:
-    # Hide the sidebar completely
     hide_sidebar_style = """
         <style>
         [data-testid="stSidebar"] {display: none;}
@@ -96,7 +91,6 @@ else:
             embeddings=embeddings
         )
         st.sidebar.success("You are ready to use this chatbot now!")
-#Hide sidebar for public access starts ends here
 
 # Apply custom CSS to style user and bot messages
 st.markdown(
@@ -111,7 +105,6 @@ st.markdown(
 )
 
 # Display Chat History
-#st.subheader("Chat History")
 chat_container = st.container()
 with chat_container:
     for chat_message in st.session_state.chat_history:
@@ -127,25 +120,13 @@ with chat_container:
                 unsafe_allow_html=True,
             )
 
-# Function to process user input
 def process_input():
     user_query = st.session_state.user_input.strip()
     if user_query:
-        response = query_llama3(user_query)  # Call your chatbot function
-
-        # Save chat history in session state
+        response = query_llama3(user_query)  # Call chatbot function
         st.session_state.chat_history.append({"role": "user", "content": user_query})
         st.session_state.chat_history.append({"role": "bot", "content": response})
-
-        # Clear input box (reset value)
         st.session_state.user_input = ""
 
-# Move Input Box and Button Below Chat
 st.markdown("---")  # Adds a separator
-
-# Input box for user query
-st.text_input("Ask a question:", key="user_input")
-
-# Submit button to trigger response
-if st.button("Submit Question"):
-    process_input()
+st.text_input("Ask a question:", key="user_input", on_change=process_input)
