@@ -96,7 +96,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Display Chat History (Scrollable)
+# Display Chat History
 st.subheader("Chat History")
 chat_container = st.container()
 with chat_container:
@@ -113,12 +113,9 @@ with chat_container:
                 unsafe_allow_html=True,
             )
 
-# Move Input Box and Button Below Chat
-st.markdown("---")  # Adds a separator
-
-user_query = st.text_input("Ask a question:", key="user_input", value=st.session_state.user_input)
-
-if st.button("Get Answer"):
+# Function to process user input
+def process_input():
+    user_query = st.session_state.user_input.strip()
     if user_query:
         response = query_llama3(user_query)  # Call your chatbot function
 
@@ -126,6 +123,9 @@ if st.button("Get Answer"):
         st.session_state.chat_history.append({"role": "user", "content": user_query})
         st.session_state.chat_history.append({"role": "bot", "content": response})
 
-        # Clear input box after response is generated
+        # Clear input box (reset value)
         st.session_state.user_input = ""
-        st.rerun()
+
+# Move Input Box and Button Below Chat
+st.markdown("---")  # Adds a separator
+st.text_input("Ask a question:", key="user_input", on_change=process_input)
