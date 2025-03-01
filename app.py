@@ -59,9 +59,7 @@ def query_llama3(user_query):
     memory.save_context({"input": user_query}, {"output": response.content})
     return response.content
 
-import streamlit as st
-from langchain.schema import HumanMessage, SystemMessage
-from PyPDF2 import PdfReader
+#UI starts from here
 
 # Initialize session state for chat history
 if "chat_history" not in st.session_state:
