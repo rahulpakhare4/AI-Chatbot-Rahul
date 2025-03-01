@@ -66,13 +66,17 @@ st.title("Rahul's AI Chatbot")
 st.subheader("Chat History")
 chat_history = memory.load_memory_variables({}).get("chat_history", [])
 
-# Ensure no duplicate messages are displayed
-unique_messages = set()
-for chat_message in chat_history:
-    if chat_message.content not in unique_messages:
-        role = "👤" if isinstance(chat_message, HumanMessage) else "🤖"
-        st.write(f"{role}: {chat_message.content}")
-        unique_messages.add(chat_message.content)
+# Create a container to store messages dynamically
+chat_container = st.container()
+
+# Ensure messages are displayed only once per session
+displayed_messages = set()
+with chat_container:
+    for chat_message in chat_history:
+        if chat_message.content not in displayed_messages:
+            role = "👤" if isinstance(chat_message, HumanMessage) else "🤖"
+            st.write(f"{role}: {chat_message.content}")
+            displayed_messages.add(chat_message.content)
 
 # User Input
 user_query = st.text_input("Ask a question:")
@@ -81,9 +85,16 @@ if st.button("Get Answer"):
     if user_query:
         response = query_llama3(user_query)
 
-        # Save user input and response
+        # Save user input and response in memory
         memory.save_context({"input": user_query}, {"output": response})
 
-        # Refresh the chat history
+        # Manually refresh the chat container by reloading chat history
+        chat_history = memory.load_memory_variables({}).get("chat_history", [])
+        
+        # Display the latest response dynamically
+        with chat_container:
+            st.write(f"👤: {user_query}")
+            st.write(f"🤖: {response}")
+
         
 
