@@ -59,6 +59,14 @@ def query_llama3(user_query):
     memory.save_context({"input": user_query}, {"output": response.content})
     return response.content
 
+import streamlit as st
+from langchain.schema import HumanMessage, SystemMessage
+from PyPDF2 import PdfReader
+
+# Initialize session state for chat history
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
 # Streamlit UI
 st.title("Rahul's AI Chatbot")
 
@@ -76,25 +84,20 @@ if uploaded_file is not None:
 
 # Display Chat History
 st.subheader("Chat History")
-
-# Load conversation history from memory
-chat_history = memory.load_memory_variables({}).get("chat_history", [])
-
-# Display all past messages uniquely
-if chat_history:
-    for chat_message in chat_history:
-        role = "👤" if isinstance(chat_message, HumanMessage) else "🤖"
-        st.write(f"{role}: {chat_message.content}")
+for chat_message in st.session_state.chat_history:
+    role = "👤" if chat_message["role"] == "user" else "🤖"
+    st.write(f"{role}: {chat_message['content']}")
 
 # User Input
 user_query = st.text_input("Ask a question:")
 
 if st.button("Get Answer"):
     if user_query:
-        response = query_llama3(user_query)
+        response = query_llama3(user_query)  # Call your chatbot function
 
-        # Save user input and response in memory
-        memory.save_context({"input": user_query}, {"output": response})
+        # Save the chat in session state
+        st.session_state.chat_history.append({"role": "user", "content": user_query})
+        st.session_state.chat_history.append({"role": "bot", "content": response})
 
         # Display new messages instantly
         st.write(f"👤: {user_query}")
