@@ -60,10 +60,6 @@ def query_llama3(user_query):
     return response.content
 
 #UI starts from here
-
-import streamlit as st
-from PyPDF2 import PdfReader
-
 # Initialize session state for chat history
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
@@ -98,6 +94,7 @@ st.markdown(
 )
 
 # Display Chat History
+#st.subheader("Chat History")
 chat_container = st.container()
 with chat_container:
     for chat_message in st.session_state.chat_history:
@@ -117,7 +114,7 @@ with chat_container:
 def process_input():
     user_query = st.session_state.user_input.strip()
     if user_query:
-        response = f"🤖: This is a response to '{user_query}'"  # Replace with actual chatbot function
+        response = query_llama3(user_query)  # Call your chatbot function
 
         # Save chat history in session state
         st.session_state.chat_history.append({"role": "user", "content": user_query})
