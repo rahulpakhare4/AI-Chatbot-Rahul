@@ -92,6 +92,12 @@ if st.button("Get Answer"):
         response = query_llama3(user_query)
         st.write("🤖", response)
         
-        # Display updated chat history
+        # Save user input and response
         memory.save_context({"input": user_query}, {"output": response})
-        st.experimental_rerun()
+
+        # Display updated chat history
+        chat_history = memory.load_memory_variables({}).get("chat_history", [])
+        for chat_message in chat_history:
+            role = "👤" if isinstance(chat_message, HumanMessage) else "🤖"
+            st.write(f"{role}: {chat_message.content}")
+
