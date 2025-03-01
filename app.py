@@ -85,5 +85,5 @@ if st.button("Get Answer"):
         memory.save_context({"input": user_query}, {"output": response})
 
         # Refresh the chat history
-        st.experimental_rerun()
+        
 
