@@ -68,19 +68,33 @@ if "user_input" not in st.session_state:
 
 # Streamlit UI
 st.title("Rahul's AI Chatbot")
-"""
-# Sidebar for PDF Upload
-st.sidebar.header("Upload PDF")
-uploaded_file = st.sidebar.file_uploader("Upload a PDF", type=["pdf"])
+#Sidebar Hide code for public
+# Define user authentication
+user_authenticated = False  # Change this based on authentication logic
 
-if uploaded_file is not None:
-    def load_pdf(file):
-        reader = PdfReader(file)
-        return "".join([page.extract_text() or "" for page in reader.pages])
+if not user_authenticated:
+    # Hide the sidebar completely
+    hide_sidebar_style = """
+        <style>
+        [data-testid="stSidebar"] {display: none;}
+        </style>
+    """
+    st.markdown(hide_sidebar_style, unsafe_allow_html=True)
+else:
+    st.sidebar.header("Upload PDF")
+    uploaded_file = st.sidebar.file_uploader("Upload a PDF", type=["pdf"])
 
-    pdf_text = load_pdf(uploaded_file)
-    st.sidebar.success("PDF uploaded successfully! Text extracted.")
-"""
+    if uploaded_file is not None:
+        pdf_text = load_pdf(uploaded_file)
+        chunks = chunk_text(pdf_text)
+        embeddings = [embedding_model.embed_query(chunk) for chunk in chunks]
+        collection.add(
+            ids=[str(i) for i in range(len(chunks))],
+            documents=chunks,
+            embeddings=embeddings
+        )
+        st.sidebar.success("You are ready to use this chatbot now!")
+#Sidebar Code hide ends here
 # Apply custom CSS to style user and bot messages
 st.markdown(
     """
