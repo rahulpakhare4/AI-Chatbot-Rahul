@@ -66,6 +66,8 @@ from PyPDF2 import PdfReader
 # Initialize session state for chat history
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
+if "user_input" not in st.session_state:
+    st.session_state.user_input = ""
 
 # Streamlit UI
 st.title("Rahul's AI Chatbot")
@@ -114,7 +116,8 @@ with chat_container:
 # Move Input Box and Button Below Chat
 st.markdown("---")  # Adds a separator
 
-user_query = st.text_input("Ask a question:", key="user_input")
+user_query = st.text_input("Ask a question:", key="user_input", value=st.session_state.user_input)
+
 if st.button("Get Answer"):
     if user_query:
         response = query_llama3(user_query)  # Call your chatbot function
@@ -123,5 +126,6 @@ if st.button("Get Answer"):
         st.session_state.chat_history.append({"role": "user", "content": user_query})
         st.session_state.chat_history.append({"role": "bot", "content": response})
 
-        # Refresh page to update chat display
+        # Clear input box after response is generated
+        st.session_state.user_input = ""
         st.rerun()
