@@ -14,13 +14,6 @@ from sentence_transformers import SentenceTransformer, util
 from PyPDF2 import PdfReader
 import numpy as np
 
-import streamlit as st
-import openai
-
-# ✅ Set page config
-st.set_page_config(page_title="Rahul's AI Clone Chatbot", layout="wide")
-
-
 # Initialize models
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 semantic_model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -76,82 +69,25 @@ def query_llama3(user_query):
 # Streamlit UI
 st.title("Rahul's AI Chatbot")
 
-#Sidebar Hide code for public
+#Sidebar show code for public
 # Define user authentication
-user_authenticated = False  # Change this based on authentication logic
+st.sidebar.header("Upload PDF")
+uploaded_file = st.sidebar.file_uploader("Upload a PDF", type=["pdf"])
 
-if not user_authenticated:
-    # Hide the sidebar completely
-    hide_sidebar_style = """
-        <style>
-        [data-testid="stSidebar"] {display: none;}
-        </style>
-    """
-    st.markdown(hide_sidebar_style, unsafe_allow_html=True)
-else:
-    st.sidebar.header("Upload PDF")
-    uploaded_file = st.sidebar.file_uploader("Upload a PDF", type=["pdf"])
+if uploaded_file is not None:
+    pdf_text = load_pdf(uploaded_file)
+    chunks = chunk_text(pdf_text)
+    embeddings = [embedding_model.embed_query(chunk) for chunk in chunks]
+    collection.add(
+        ids=[str(i) for i in range(len(chunks))],
+        documents=chunks,
+        embeddings=embeddings
+    )
+    st.sidebar.success("You are ready to use this chatboat now!")
+#Sidebar Code show hide ends here
 
-    if uploaded_file is not None:
-        pdf_text = load_pdf(uploaded_file)
-        chunks = chunk_text(pdf_text)
-        embeddings = [embedding_model.embed_query(chunk) for chunk in chunks]
-        collection.add(
-            ids=[str(i) for i in range(len(chunks))],
-            documents=chunks,
-            embeddings=embeddings
-        )
-        st.sidebar.success("You are ready to use this chatbot now!")
-#Sidebar Code hide ends here
-
-#CHAT UI
-
-
-# ✅ Set up Groq API key (Replace with actual key)
-GROQ_API_KEY = "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"
-openai.api_key = GROQ_API_KEY
-
-# ✅ Updated AI Query Function
-def query_llama3(user_input):
-    """Fetch response from Groq Llama 3 API with better error handling"""
-    try:
-        response = openai.ChatCompletion.create(
-            model="llama-3-8b",
-            messages=[{"role": "user", "content": user_input}],
-            max_tokens=150,
-            temperature=0.7
-        )
-        return response["choices"][0]["message"]["content"]
-    
-    except Exception as e:
-        return f"❌ Error: {str(e)}"
-
-# ✅ UI for Chatbot
-if "messages" not in st.session_state:
-    st.session_state["messages"] = []
-
-# ✅ Chat Display
-for message in st.session_state["messages"]:
-    role, content = message["role"], message["content"]
-    if role == "user":
-        st.markdown(f"<div style='text-align: right; background-color: #DCF8C6; padding: 10px; margin: 5px; border-radius: 10px; width: 60%; float: right;'><b>👤 You:</b> {content}</div><div style='clear: both;'></div>", unsafe_allow_html=True)
-    else:
-        st.markdown(f"<div style='text-align: left; background-color: #E0E0E0; padding: 10px; margin: 5px; border-radius: 10px; width: 60%;'><b>🤖 AI:</b> {content}</div><div style='clear: both;'></div>", unsafe_allow_html=True)
-
-# ✅ Input Box
-user_query = st.text_input("Type a message...", key="input", placeholder="Ask me anything...")
-
-# ✅ Send Button
-if st.button("Send"):
+user_query = st.text_input("Ask a question:")
+if st.button("Get Answer"):
     if user_query:
-        # Store user message
-        st.session_state["messages"].append({"role": "user", "content": user_query})
-        
-        # Get AI response
-        ai_response = query_llama3(user_query)
-        
-        # Store AI message
-        st.session_state["messages"].append({"role": "assistant", "content": ai_response})
-        
-        # Refresh to show messages
-        st.experimental_rerun()
+        response = query_llama3(user_query)
+        st.write("🤖", response)
