@@ -17,7 +17,7 @@ import numpy as np
 # Initialize models
 embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 semantic_model = SentenceTransformer('all-MiniLM-L6-v2')
-chat = ChatGroq(temperature=0.7, model_name="llama3-70b-8192", groq_api_key="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")
+chat = ChatGroq(temperature=0.7, model_name="llama3-70b-8192", groq_api_key="your_groq_api_key")
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
 # Initialize ChromaDB
@@ -40,12 +40,6 @@ def retrieve_context(query, top_k=1):
     results = collection.query(query_embeddings=[query_embedding], n_results=top_k)
     return results.get("documents", [[]])[0] if results else ["No relevant context found."]
 
-def evaluate_response(user_query, generated_response, context):
-    """Evaluate response using semantic similarity."""
-    response_embedding = semantic_model.encode(generated_response, convert_to_tensor=True)
-    context_embedding = semantic_model.encode(context, convert_to_tensor=True)
-    return util.pytorch_cos_sim(response_embedding, context_embedding)[0][0].item()
-    
 def query_llama3(user_query):
     """Handles user queries while retrieving context and past chat history."""
     system_prompt = """
@@ -54,7 +48,6 @@ def query_llama3(user_query):
     Do not provide false information.
     If you don’t know the answer, simply respond:
     "Apologies, I am an AI clone of Rahul and don't have all the details. Stay tuned for my latest version!" No additional sentences are required.
-    You can discuss general topics, but avoid speculative or misleading responses.
     """
     past_chat_history = memory.load_memory_variables({}).get("chat_history", [])[-8:]
     retrieved_context = retrieve_context(user_query)
@@ -65,12 +58,11 @@ def query_llama3(user_query):
     response = chat.invoke(messages)
     memory.save_context({"input": user_query}, {"output": response.content})
     return response.content
-    
+
 # Streamlit UI
 st.title("Rahul's AI Chatbot")
 
-#Sidebar show code for public
-# Define user authentication
+# Sidebar for file upload
 st.sidebar.header("Upload PDF")
 uploaded_file = st.sidebar.file_uploader("Upload a PDF", type=["pdf"])
 
@@ -83,11 +75,23 @@ if uploaded_file is not None:
         documents=chunks,
         embeddings=embeddings
     )
-    st.sidebar.success("You are ready to use this chatboat now!")
-#Sidebar Code show hide ends here
+    st.sidebar.success("You are ready to use this chatbot now!")
 
+# Chat Interface
+st.subheader("Chat History")
+chat_history = memory.load_memory_variables({}).get("chat_history", [])
+
+for chat_message in chat_history:
+    role = "👤" if isinstance(chat_message, HumanMessage) else "🤖"
+    st.write(f"{role}: {chat_message.content}")
+
+# User Input
 user_query = st.text_input("Ask a question:")
 if st.button("Get Answer"):
     if user_query:
         response = query_llama3(user_query)
         st.write("🤖", response)
+        
+        # Display updated chat history
+        memory.save_context({"input": user_query}, {"output": response})
+        st.experimental_rerun()
