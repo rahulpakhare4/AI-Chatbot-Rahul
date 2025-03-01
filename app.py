@@ -89,7 +89,6 @@ st.markdown(
     .chat-container { max-height: 400px; overflow-y: auto; }
     .user-message { text-align: right; background-color: #DCF8C6; padding: 10px; border-radius: 10px; margin: 5px 0; }
     .bot-message { text-align: left; background-color: #E8E8E8; padding: 10px; border-radius: 10px; margin: 5px 0; }
-
      .title-container {
         position: fixed;
         top: 0;
@@ -101,11 +100,9 @@ st.markdown(
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         text-align: center;
         font-size: 24px;
-        font-weight: bold;
-    }
-    .main-content {
-        margin-top: 70px;  /* Pushes content below sticky title */
-    }
+        font-weight: bold;}
+        
+    .main-content { margin-top: 70px;  /* Pushes content below sticky title */  }
     </style>
     """,
     unsafe_allow_html=True,
