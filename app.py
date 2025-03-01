@@ -82,23 +82,25 @@ if uploaded_file is not None:
     pdf_text = load_pdf(uploaded_file)
     st.sidebar.success("PDF uploaded successfully! Text extracted.")
 
-# Display Chat History
+# Display Chat History (Scrollable)
 st.subheader("Chat History")
-for chat_message in st.session_state.chat_history:
-    role = "👤" if chat_message["role"] == "user" else "🤖"
-    st.write(f"{role}: {chat_message['content']}")
+chat_container = st.container()
+with chat_container:
+    for chat_message in st.session_state.chat_history:
+        role = "👤" if chat_message["role"] == "user" else "🤖"
+        st.write(f"{role}: {chat_message['content']}")
 
-# User Input
-user_query = st.text_input("Ask a question:")
+# Move Input Box and Button Below Chat
+st.markdown("---")  # Adds a separator
 
+user_query = st.text_input("Ask a question:", key="user_input")
 if st.button("Get Answer"):
     if user_query:
         response = query_llama3(user_query)  # Call your chatbot function
 
-        # Save the chat in session state
+        # Save chat history in session state
         st.session_state.chat_history.append({"role": "user", "content": user_query})
         st.session_state.chat_history.append({"role": "bot", "content": response})
 
-        # Display new messages instantly
-        st.write(f"👤: {user_query}")
-        st.write(f"🤖: {response}")
+        # Refresh page to update chat display
+        st.rerun()
